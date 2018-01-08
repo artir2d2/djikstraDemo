@@ -6,31 +6,39 @@ import javax.swing.table.DefaultTableModel;
 
 final class TableModel extends DefaultTableModel {
 	private static final long serialVersionUID = 1L;
-	Class[] columnTypes = new Class[] { Integer.class, String.class, String.class, Integer.class };
-
-	TableModel(int rows) {
-		super(createTableModel(rows), getColumns());
+	
+	TableModel(int dimention) {
+		super(createTableModel(dimention), getColumns(dimention));
 	}
 	
 	@Override
     public boolean isCellEditable(int row, int column) {
+		if(row+1 == column) return false;
         return column == 0 ? false : true;
     }
 	
-	private static Object[][] createTableModel(int rows) {
+	private static Object[][] createTableModel(int dimention) {
 		Object[][] table;
-		table = new Object[rows+1][4];
-		for (int col = 1; col < 4; col++) {
-			for (int row = 0; row < rows + 1; row++) {
-				table[row][0] = row;
+		table = new Object[dimention][dimention];
+		for (int col = 1; col < dimention; col++) {
+			for (int row = 0; row < dimention; row++) {
+				table[row][0] = "V"+(row+1);
 				table[row][col] = "";
 			}
 		}
 		return table;
 	}
 
-	public static String[] getColumns() {
-		return new String[] { "No.", "V1", "V2", "W",};
+	public static String[] getColumns(int cols) {
+		String columns[] = new String[cols+1];
+		if(columns.length==0){
+			return new String[1];
+		}
+		columns[0] = "";
+		for(int i=1;i<cols+1;i++){
+			columns[i] = "V"+i;
+		}
+		return columns;
 	}
 
 	public static void losujDane(int machines, int tasks, int maxVal, JTable table) {
@@ -42,7 +50,9 @@ final class TableModel extends DefaultTableModel {
 		}
 	}
 
-	public Class<? extends String> getColumnClass(int columnIndex) {
-		return columnTypes[columnIndex];
+	public Class<?> getColumnClass(int columnIndex) {
+		if(columnIndex==0) return String.class;
+		return Integer.class;
+		
 	}
 }

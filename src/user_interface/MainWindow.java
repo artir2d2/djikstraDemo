@@ -1,5 +1,6 @@
 package user_interface;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 
@@ -20,18 +21,33 @@ import javax.swing.JComboBox;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.Action;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextField;
+import javax.swing.JViewport;
+import javax.swing.table.DefaultTableCellRenderer;
+
+import Djikstra.Algorithm;
+import Djikstra.Edge;
+import Djikstra.Graph;
+import Djikstra.Vertex;
+
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainWindow {
-
+	private static final int HEADER_HEIGHT = 25;
 	private JFrame frmDjikstraAlgorithmDemo;
 	private JTable edgeTable;
 	private final Action actionAddRow = new SwingAction();
-	private final Action actionStartSimulation = new SwingAction_1();
-	JComboBox comboStartVertex;
-	JComboBox comboEndVertex;
-//	private JTable edgeTable;
+	private final Action actionStartSimulation = new StartSimulationAction();
+	JComboBox<String> comboStartVertex;
+	JComboBox<String> comboEndVertex;
+	private JTextField numberOfVerticlesTxt;
+	JPanel tablePanel;
+	private int numberOfVerticles;
 
 	/**
 	 * Launch the application.
@@ -65,7 +81,7 @@ public class MainWindow {
 		frmDjikstraAlgorithmDemo.setBounds(100, 100, 800, 600);
 		frmDjikstraAlgorithmDemo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0 };
+		gridBagLayout.columnWidths = new int[] { 200, 0 };
 		gridBagLayout.rowHeights = new int[] { 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0 };
 		gridBagLayout.rowWeights = new double[] { 1.0 };
@@ -73,29 +89,104 @@ public class MainWindow {
 
 		JPanel menuPanel = new JPanel();
 		GridBagConstraints gbc_menuPanel = new GridBagConstraints();
-		gbc_menuPanel.anchor = GridBagConstraints.WEST;
-		gbc_menuPanel.insets = new Insets(0, 0, 5, 0);
-		gbc_menuPanel.fill = GridBagConstraints.VERTICAL;
+		gbc_menuPanel.insets = new Insets(5, 5, 5, 5);
+		gbc_menuPanel.fill = GridBagConstraints.BOTH;
 		gbc_menuPanel.gridx = 0;
 		gbc_menuPanel.gridy = 0;
 		
 		GridBagLayout gbl_menuPanel = new GridBagLayout();
 		gbl_menuPanel.columnWidths = new int[]{0,0};
-		gbl_menuPanel.rowHeights = new int[]{20, 0, 0, 0, 0};
-		gbl_menuPanel.columnWeights = new double[]{1.0,0};
-		gbl_menuPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0};
+		gbl_menuPanel.rowHeights = new int[]{20, 0, 0, 0, 0, 0};
+		gbl_menuPanel.columnWeights = new double[]{1.0,1.0};
+		gbl_menuPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, 0.0};
 		menuPanel.setLayout(gbl_menuPanel);
-		JScrollPane scrollMenuPanel = new JScrollPane(menuPanel);
-		frmDjikstraAlgorithmDemo.getContentPane().add(scrollMenuPanel, gbc_menuPanel);
+		frmDjikstraAlgorithmDemo.getContentPane().add(menuPanel, gbc_menuPanel);
 		
-		JPanel tablePanel = new JPanel();
+		JLabel lblIloKrawdzi = new JLabel("Ilo\u015B\u0107 Kraw\u0119dzi:");
+		GridBagConstraints gbc_lblIloKrawdzi = new GridBagConstraints();
+		gbc_lblIloKrawdzi.anchor = GridBagConstraints.EAST;
+		gbc_lblIloKrawdzi.insets = new Insets(0, 0, 5, 5);
+		gbc_lblIloKrawdzi.gridx = 0;
+		gbc_lblIloKrawdzi.gridy = 0;
+		menuPanel.add(lblIloKrawdzi, gbc_lblIloKrawdzi);
+		
+		numberOfVerticlesTxt = new JTextField();
+		numberOfVerticlesTxt.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				numberOfVerticles = Integer.parseInt(numberOfVerticlesTxt.getText());
+				edgeTable.setModel(new TableModel(numberOfVerticles));
+				DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+				centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+				centerRenderer.setVerticalAlignment(JLabel.CENTER);
+				centerRenderer.setBackground(edgeTable.getTableHeader().getBackground());
+				edgeTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+				
+				for(int i=0;i<edgeTable.getColumnModel().getColumnCount();i++){
+					edgeTable.getColumnModel().getColumn(i).setMaxWidth(25);
+				}
+				edgeTable.setRowHeight(25);
+				edgeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+				
+				DefaultComboBoxModel comboStartVertexModel = (DefaultComboBoxModel) comboStartVertex.getModel();
+				DefaultComboBoxModel comboEndVertexModel = (DefaultComboBoxModel) comboEndVertex.getModel();
+				comboStartVertexModel.removeAllElements();
+				comboEndVertexModel.removeAllElements();
+				for(int i=0;i<Integer.parseInt(numberOfVerticlesTxt.getText());i++){
+					comboStartVertexModel.addElement("Wierzcho³ek "+(i+1));
+					comboEndVertexModel.addElement("Wierzcho³ek "+(i+1));
+				}
+				
+			}
+		});
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.insets = new Insets(0, 0, 5, 0);
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 1;
+		gbc_textField.gridy = 0;
+		menuPanel.add(numberOfVerticlesTxt, gbc_textField);
+		numberOfVerticlesTxt.setColumns(10);
+		
+		JLabel lblStartVertex = new JLabel("Wierzcho\u0142ek pocz\u0105tkowy:");
+		GridBagConstraints gbc_lblStartVertex = new GridBagConstraints();
+		gbc_lblStartVertex.insets = new Insets(0, 0, 5, 5);
+		gbc_lblStartVertex.anchor = GridBagConstraints.NORTH;
+		gbc_lblStartVertex.gridx = 0;
+		gbc_lblStartVertex.gridy = 1;
+		menuPanel.add(lblStartVertex, gbc_lblStartVertex);
+		
+		JLabel lblEndVertex = new JLabel("Wierzcho\u0142ek ko\u0144cowy:");
+		GridBagConstraints gbc_lblEndVertex = new GridBagConstraints();
+		gbc_lblEndVertex.insets = new Insets(0, 0, 5, 0);
+		gbc_lblEndVertex.gridx = 1;
+		gbc_lblEndVertex.gridy = 1;
+		menuPanel.add(lblEndVertex, gbc_lblEndVertex);
+		
+		comboStartVertex = new JComboBox<String>();
+		GridBagConstraints gbc_comboStartVertex = new GridBagConstraints();
+		gbc_comboStartVertex.insets = new Insets(0, 0, 5, 5);
+		gbc_comboStartVertex.anchor = GridBagConstraints.NORTH;
+		gbc_comboStartVertex.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboStartVertex.gridx = 0;
+		gbc_comboStartVertex.gridy = 2;
+		menuPanel.add(comboStartVertex, gbc_comboStartVertex);
+		
+		comboEndVertex = new JComboBox<String>();
+		GridBagConstraints gbc_comboEndVertex = new GridBagConstraints();
+		gbc_comboEndVertex.insets = new Insets(0, 0, 5, 0);
+		gbc_comboEndVertex.anchor = GridBagConstraints.NORTH;
+		gbc_comboEndVertex.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboEndVertex.gridx = 1;
+		gbc_comboEndVertex.gridy = 2;
+		menuPanel.add(comboEndVertex, gbc_comboEndVertex);
+		
+		tablePanel = new JPanel();
 		GridBagConstraints gbc_tablePanel = new GridBagConstraints();
-		gbc_tablePanel.gridheight = 4;
-		gbc_tablePanel.anchor = GridBagConstraints.WEST;
-		gbc_tablePanel.insets = new Insets(0, 0, 5, 5);
-		gbc_tablePanel.fill = GridBagConstraints.VERTICAL;
+		gbc_tablePanel.gridwidth = 2;
+		gbc_tablePanel.insets = new Insets(0, 0, 5, 0);
+		gbc_tablePanel.fill = GridBagConstraints.BOTH;
 		gbc_tablePanel.gridx = 0;
-		gbc_tablePanel.gridy = 0;
+		gbc_tablePanel.gridy = 4;
 		menuPanel.add(tablePanel, gbc_tablePanel);
 		GridBagLayout gbl_tablePanel = new GridBagLayout();
 		gbl_tablePanel.columnWidths = new int[]{0};
@@ -111,82 +202,45 @@ public class MainWindow {
 		gbc_lblEdgeTable.gridy = 0;
 		tablePanel.add(lblEdgeTable, gbc_lblEdgeTable);
 		
-		edgeTable = new JTable(new TableModel(5));
-		edgeTable.addPropertyChangeListener(new TableChangeListener(this.comboStartVertex, (TableModel) this.edgeTable.getModel()));
+		edgeTable = new JTable(new TableModel(0));
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setVerticalAlignment(JLabel.CENTER);
+		centerRenderer.setBackground(edgeTable.getTableHeader().getBackground());
+		edgeTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+		
+		for(int i=0;i<edgeTable.getColumnModel().getColumnCount();i++){
+			edgeTable.getColumnModel().getColumn(i).setMaxWidth(25);
+		}
+		edgeTable.setRowHeight(25);
+		edgeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		
 		GridBagConstraints gbc_edgeTable = new GridBagConstraints();
-		gbc_edgeTable.insets = new Insets(0, 0, 5, 0);
+		gbc_edgeTable.insets = new Insets(5, 5, 5, 5);
 		gbc_edgeTable.fill = GridBagConstraints.BOTH;
 		gbc_edgeTable.gridx = 0;
 		gbc_edgeTable.gridy = 1;
-		JScrollPane scrolleEdgeTable = new JScrollPane(edgeTable);
-		scrolleEdgeTable.setPreferredSize(new Dimension(150,Integer.MAX_VALUE));
-		tablePanel.add(scrolleEdgeTable,gbc_edgeTable);
 		
-		JButton btnAddRow = new JButton("Dodaj wiersz");
-		btnAddRow.setAction(actionAddRow);
-		GridBagConstraints gbc_btnAddRow = new GridBagConstraints();
-		gbc_btnAddRow.gridx = 0;
-		gbc_btnAddRow.gridy = 2;
-		tablePanel.add(btnAddRow, gbc_btnAddRow);
+		JScrollPane scrollEdgeTable = new JScrollPane(edgeTable);
+		scrollEdgeTable.setColumnHeader(new JViewport() {
+			@Override
+			public Dimension getPreferredSize() {
+				Dimension d = super.getPreferredSize();
+				d.height = HEADER_HEIGHT;
+				return d;
+			}
+		});
 		
-		JLabel lblStartVertex = new JLabel("Wierzcho\u0142ek pocz\u0105tkowy:");
-		GridBagConstraints gbc_lblStartVertex = new GridBagConstraints();
-		gbc_lblStartVertex.insets = new Insets(0, 0, 5, 0);
-		gbc_lblStartVertex.anchor = GridBagConstraints.NORTH;
-		gbc_lblStartVertex.gridx = 1;
-		gbc_lblStartVertex.gridy = 0;
-		menuPanel.add(lblStartVertex, gbc_lblStartVertex);
-		
-		comboStartVertex = new JComboBox();
-		GridBagConstraints gbc_comboStartVertex = new GridBagConstraints();
-		gbc_comboStartVertex.insets = new Insets(0, 0, 5, 0);
-		gbc_comboStartVertex.anchor = GridBagConstraints.NORTH;
-		gbc_comboStartVertex.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboStartVertex.gridx = 1;
-		gbc_comboStartVertex.gridy = 1;
-		menuPanel.add(comboStartVertex, gbc_comboStartVertex);
-		
-		JLabel lblEndVertex = new JLabel("Wierzcho\u0142ek ko\u0144cowy:");
-		GridBagConstraints gbc_lblEndVertex = new GridBagConstraints();
-		gbc_lblEndVertex.insets = new Insets(0, 0, 5, 0);
-		gbc_lblEndVertex.gridx = 1;
-		gbc_lblEndVertex.gridy = 2;
-		menuPanel.add(lblEndVertex, gbc_lblEndVertex);
-		
-		comboEndVertex = new JComboBox();
-		GridBagConstraints gbc_comboEndVertex = new GridBagConstraints();
-		gbc_comboEndVertex.insets = new Insets(0, 0, 5, 0);
-		gbc_comboEndVertex.anchor = GridBagConstraints.NORTH;
-		gbc_comboEndVertex.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboEndVertex.gridx = 1;
-		gbc_comboEndVertex.gridy = 3;
-		menuPanel.add(comboEndVertex, gbc_comboEndVertex);
+		tablePanel.add(scrollEdgeTable,gbc_edgeTable);
 		
 		JButton btnStartSimulation = new JButton("Rozpocznij symulacj\u0119");
 		btnStartSimulation.setAction(actionStartSimulation);
+		btnStartSimulation.setText("Rozpocznij symulacj\u0119");
 		GridBagConstraints gbc_btnStartSimulation = new GridBagConstraints();
 		gbc_btnStartSimulation.gridwidth = 2;
-		gbc_btnStartSimulation.insets = new Insets(0, 0, 0, 5);
 		gbc_btnStartSimulation.gridx = 0;
-		gbc_btnStartSimulation.gridy = 4;
+		gbc_btnStartSimulation.gridy = 5;
 		menuPanel.add(btnStartSimulation, gbc_btnStartSimulation);
-		
-//		JLabel lblTabelaKrawdzi = new JLabel("Tabela kraw\u0119dzi:");
-//		GridBagConstraints gbc_lblTabelaKrawdzi = new GridBagConstraints();
-//		gbc_lblTabelaKrawdzi.anchor = GridBagConstraints.WEST;
-//		gbc_lblTabelaKrawdzi.insets = new Insets(0, 0, 0, 5);
-//		gbc_lblTabelaKrawdzi.gridx = 0;
-//		gbc_lblTabelaKrawdzi.gridy = 0;
-//		tablePanel.add(lblTabelaKrawdzi, gbc_lblTabelaKrawdzi);
-//		
-//		edgeTable = new JTable(new TableModel(30));
-//		JScrollPane scrollTable = new JScrollPane(edgeTable);
-//		GridBagConstraints gbc_scrollTable = new GridBagConstraints();
-//		gbc_scrollTable.fill = GridBagConstraints.BOTH;
-//		gbc_scrollTable.gridx = 0;
-//		gbc_scrollTable.gridy = 1;
-//		tablePanel.add(scrollTable, gbc_scrollTable);
-//		scrollTable.setPreferredSize(new Dimension(10, 20));
 
 		DrawPanel drawPanel = new DrawPanel();
 		GridBagConstraints gbc_drawPanel = new GridBagConstraints();
@@ -221,36 +275,6 @@ public class MainWindow {
 		mnPlik.add(mntmZapiszGraf);
 	}
 
-	private class TableChangeListener implements PropertyChangeListener {
-		JComboBox comboBox;
-		TableModel tableModel;
-		public TableChangeListener(JComboBox comboBox, TableModel tableModel){
-			this.tableModel = tableModel;
-			this.comboBox = comboBox;
-		}
-		
-		public void setCombo(JComboBox comboBox){
-			this.comboBox = comboBox;
-		}
-		
-		public JComboBox getCombo(){
-			return this.comboBox;
-		}
-		
-		public void setTableModel(TableModel tableModel){
-			this.tableModel =  tableModel;
-		}
-		
-		public void propertyChange(PropertyChangeEvent evt) {
-			setDistinctVerticles();
-		}
-		
-		public void setDistinctVerticles(){
-			for(int row =0; row<tableModel.getRowCount();row++){
-				//if(comboBox.getModel().getElementAt(index))
-			}
-		}
-	}
 	private class SwingAction extends AbstractAction {
 		public SwingAction() {
 			putValue(NAME, "SwingAction");
@@ -259,12 +283,54 @@ public class MainWindow {
 		public void actionPerformed(ActionEvent e) {
 		}
 	}
-	private class SwingAction_1 extends AbstractAction {
-		public SwingAction_1() {
+	private class StartSimulationAction extends AbstractAction {
+		public StartSimulationAction() {
 			putValue(NAME, "SwingAction_1");
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
 		public void actionPerformed(ActionEvent e) {
+			List<Vertex> nodes;
+			List<Edge> edges;
+			nodes = new ArrayList<Vertex>();
+			edges = new ArrayList<Edge>();
+			
+			for (int i = 0; i < numberOfVerticles; i++) {
+				Vertex vertex = new Vertex("W" + i, "W" + i);
+				nodes.add(vertex);
+			}
+			
+			for (int i = 1; i <= numberOfVerticles; i++) {
+				for (int j = 0; j < numberOfVerticles; j++) {
+					//System.out.println(edgeTable.getValueAt(j, i) + "  " + i + "  " + j);
+					Vertex w1;
+					Vertex w2;
+					String weightStr = "";
+					int weight;
+					weightStr = new String(String.valueOf(edgeTable.getValueAt(j, i)));
+					if(weightStr==null||weightStr.matches("")||weightStr.matches("null")){
+						System.out.println("NULL"+weightStr);
+						weight = Integer.MAX_VALUE;
+					}else{
+						System.out.println(weightStr);
+						weight = Integer.parseInt(weightStr);
+						edges.add(new Edge("E",nodes.get(j),nodes.get(i),weight));
+					}
+				}
+			}
+			for(int i=0;i<edges.size();i++){
+				System.out.println(edges.get(i).getWeight());
+			}
+			Graph graph = new Graph(nodes, edges);
+			Algorithm algorithm = new Algorithm(graph);
+			System.out.println("start "+comboStartVertex.getSelectedIndex());
+			System.out.println("end "+comboEndVertex.getSelectedIndex());
+			algorithm.execute(nodes.get(comboStartVertex.getSelectedIndex()));
+			
+			LinkedList<Vertex> path = algorithm.getPath(nodes.get(comboEndVertex.getSelectedIndex()));
+
+	        for (Vertex vertex : path) {
+	            System.out.println(vertex);
+	        }
 		}
 	}
 }

@@ -13,8 +13,6 @@ public class DrawPanel extends JPanel {
 	private int paddingX = 15;
 	private int paddingY = 15;
 	
-	
-	
 	public int getPaddingX() {
 		return paddingX;
 	}
@@ -24,11 +22,9 @@ public class DrawPanel extends JPanel {
 		this.paddingX = paddingX;
 	}
 
-
 	public int getPaddingY() {
 		return paddingY;
 	}
-
 
 	public void setPaddingY(int paddingY) {
 		this.paddingY = paddingY;
