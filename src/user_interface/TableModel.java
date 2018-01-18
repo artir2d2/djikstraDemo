@@ -19,12 +19,17 @@ final class TableModel extends DefaultTableModel {
 	
 	private static Object[][] createTableModel(int dimention) {
 		Object[][] table;
-		table = new Object[dimention][dimention];
+		table = new Object[dimention][dimention+1];
 		for (int col = 1; col < dimention; col++) {
 			for (int row = 0; row < dimention; row++) {
+				if(row == col-1){
+					table[row][col] = "-";
+				}else{
+					table[row][col] = "";
+				}
 				table[row][0] = "V"+(row+1);
-				table[row][col] = "";
 			}
+			table[dimention-1][dimention] = "-";
 		}
 		return table;
 	}
@@ -41,11 +46,16 @@ final class TableModel extends DefaultTableModel {
 		return columns;
 	}
 
-	public static void losujDane(int machines, int tasks, int maxVal, JTable table) {
+	public static void losujDane(int maxVal, int size, JTable table) {
 		Random random = new Random();
-		for (int m = 1; m < machines + 1; m++) {
-			for (int z = 0; z < tasks; z++) {
-				table.getModel().setValueAt(random.nextInt(tasks - 1) + 1, z, m);
+		for (int y = 0; y < size; y++) {
+			for (int x = 1; x < size+1; x++) {
+				if(x-1 == y){
+					table.getModel().setValueAt("-", y, x);
+				}else{
+					table.getModel().setValueAt(random.nextInt(maxVal) + 1, y, x);
+				}
+				
 			}
 		}
 	}

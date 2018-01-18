@@ -47,7 +47,9 @@ public class MainWindow {
 	JComboBox<String> comboEndVertex;
 	private JTextField numberOfVerticlesTxt;
 	JPanel tablePanel;
+	DrawPanel drawPanel;
 	private int numberOfVerticles;
+	private final Action actionRandomData = new ActionRandomData();
 
 	/**
 	 * Launch the application.
@@ -233,16 +235,24 @@ public class MainWindow {
 		
 		tablePanel.add(scrollEdgeTable,gbc_edgeTable);
 		
+		JButton btnLosujDane = new JButton("Losuj dane");
+		btnLosujDane.setAction(actionRandomData);
+		btnLosujDane.setText("Losuj dane");
+		GridBagConstraints gbc_btnLosujDane = new GridBagConstraints();
+		gbc_btnLosujDane.insets = new Insets(0, 0, 0, 5);
+		gbc_btnLosujDane.gridx = 0;
+		gbc_btnLosujDane.gridy = 5;
+		menuPanel.add(btnLosujDane, gbc_btnLosujDane);
+		
 		JButton btnStartSimulation = new JButton("Rozpocznij symulacj\u0119");
 		btnStartSimulation.setAction(actionStartSimulation);
 		btnStartSimulation.setText("Rozpocznij symulacj\u0119");
 		GridBagConstraints gbc_btnStartSimulation = new GridBagConstraints();
-		gbc_btnStartSimulation.gridwidth = 2;
-		gbc_btnStartSimulation.gridx = 0;
+		gbc_btnStartSimulation.gridx = 1;
 		gbc_btnStartSimulation.gridy = 5;
 		menuPanel.add(btnStartSimulation, gbc_btnStartSimulation);
 
-		DrawPanel drawPanel = new DrawPanel();
+		drawPanel = new DrawPanel();
 		GridBagConstraints gbc_drawPanel = new GridBagConstraints();
 		gbc_drawPanel.insets = new Insets(0, 0, 5, 0);
 		gbc_drawPanel.fill = GridBagConstraints.BOTH;
@@ -289,48 +299,37 @@ public class MainWindow {
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
 		public void actionPerformed(ActionEvent e) {
-			List<Vertex> nodes;
-			List<Edge> edges;
-			nodes = new ArrayList<Vertex>();
-			edges = new ArrayList<Edge>();
-			
-			for (int i = 0; i < numberOfVerticles; i++) {
-				Vertex vertex = new Vertex("W" + i, "W" + i);
-				nodes.add(vertex);
-			}
-			
-			for (int i = 1; i <= numberOfVerticles; i++) {
-				for (int j = 0; j < numberOfVerticles; j++) {
-					//System.out.println(edgeTable.getValueAt(j, i) + "  " + i + "  " + j);
-					Vertex w1;
-					Vertex w2;
-					String weightStr = "";
-					int weight;
-					weightStr = new String(String.valueOf(edgeTable.getValueAt(j, i)));
-					if(weightStr==null||weightStr.matches("")||weightStr.matches("null")){
-						System.out.println("NULL"+weightStr);
-						weight = Integer.MAX_VALUE;
-					}else{
-						System.out.println(weightStr);
-						weight = Integer.parseInt(weightStr);
-						edges.add(new Edge("E",nodes.get(j),nodes.get(i),weight));
-					}
-				}
-			}
-			for(int i=0;i<edges.size();i++){
-				System.out.println(edges.get(i).getWeight());
-			}
-			Graph graph = new Graph(nodes, edges);
+			/*
+			 * SEKCJA DO WYEKSPORTOWANIA DO ZEWNETRZNEJ METODY/KLASY
+			 */
+			//initialize graph data with values from table
+			Graph graph = Algorithm.initAlgorithm(numberOfVerticles, edgeTable);
+			//create an algorithm object
 			Algorithm algorithm = new Algorithm(graph);
 			System.out.println("start "+comboStartVertex.getSelectedIndex());
 			System.out.println("end "+comboEndVertex.getSelectedIndex());
-			algorithm.execute(nodes.get(comboStartVertex.getSelectedIndex()));
-			
-			LinkedList<Vertex> path = algorithm.getPath(nodes.get(comboEndVertex.getSelectedIndex()));
+			//execute algorithm with the start node
+			algorithm.execute(algorithm.nodes.get(comboStartVertex.getSelectedIndex()));
+			//get path from start node to end node 
+			/*
+			 * TUTAJ MASZ LISTE WIERZCHOLKOW KTORE SA NAJKROTSZA SCIEZKA OD WIERZCHOLKA POCZATKOWEGO DO KONCOWEGO
+			 */
+			LinkedList<Vertex> path = algorithm.getPath(algorithm.nodes.get(comboEndVertex.getSelectedIndex()));
 
 	        for (Vertex vertex : path) {
 	            System.out.println(vertex);
 	        }
+	        //TU GDYBYS CHCIAL RYSOWAC TO SAM - PRZYKLAD RYSOWANIA WIERZCHOLKA NA DRAWPANELU
+	        drawPanel.drawNode(path.get(0), 20, 20);
+					}
+	}
+	private class ActionRandomData extends AbstractAction {
+		public ActionRandomData() {
+			putValue(NAME, "SwingAction_1");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+		}
+		public void actionPerformed(ActionEvent e) {
+			TableModel.losujDane(10,numberOfVerticles, edgeTable);
 		}
 	}
 }

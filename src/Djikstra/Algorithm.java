@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JTable;
+
 public class Algorithm {
-	private final List<Vertex> nodes;
+	public final List<Vertex> nodes;
 	private final List<Edge> edges;
 	private Set<Vertex> settledNodes;
 	private Set<Vertex> unSettledNodes;
@@ -114,6 +116,46 @@ public class Algorithm {
 		// Put it into the correct order
 		Collections.reverse(path);
 		return path;
+	}
+	
+	public static Graph initAlgorithm(int numberOfVerticles, JTable edgeTable){
+		List<Vertex> nodes;
+		List<Edge> edges;
+		nodes = new ArrayList<Vertex>();
+		edges = new ArrayList<Edge>();
+		
+		for (int i = 0; i < numberOfVerticles; i++) {
+			Vertex vertex = new Vertex("W" + i, "W" + i);
+			nodes.add(vertex);
+		}
+		
+		for (int i = 0; i < numberOfVerticles; i++) {
+			for (int j = 0; j < numberOfVerticles; j++) {
+				//System.out.println(edgeTable.getValueAt(j, i) + "  " + i + "  " + j);
+				Vertex w1;
+				Vertex w2;
+				String weightStr = "";
+				int weight;
+				weightStr = new String(String.valueOf(edgeTable.getValueAt(i, j+1)));
+				if(weightStr==null||weightStr.matches("")||weightStr.matches("null")||weightStr.matches("-")){
+					System.out.println("NULL "+weightStr);
+					weight = Integer.MAX_VALUE;
+				}else{
+					System.out.println("NEW EDGE: "+weightStr);
+					weight = Integer.parseInt(weightStr);
+					if(i>j){
+						edges.add(new Edge("E",nodes.get(j),nodes.get(i),weight));
+					}else{
+						edges.add(new Edge("E",nodes.get(i),nodes.get(j),weight));
+					}
+				}
+			}
+		}
+		for(int i=0;i<edges.size();i++){
+			System.out.println("EDGESY: "+edges.get(i).getWeight());
+		}
+		Graph graph = new Graph(nodes, edges);
+		return graph;
 	}
 
 	public static void main(String[] art) {
