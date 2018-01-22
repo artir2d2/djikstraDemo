@@ -46,14 +46,19 @@ final class TableModel extends DefaultTableModel {
 		return columns;
 	}
 
-	public static void losujDane(int maxVal, int size, JTable table) {
+	public static void losujDane(int minVal, int maxVal,boolean randNoEdge, int size, JTable table) {
 		Random random = new Random();
 		for (int y = 0; y < size; y++) {
 			for (int x = 1; x < size+1; x++) {
 				if(x-1 == y){
 					table.getModel().setValueAt("-", y, x);
 				}else{
-					table.getModel().setValueAt(random.nextInt(maxVal) + 1, y, x);
+					table.getModel().setValueAt(random.nextInt(maxVal-minVal) + minVal, y, x);
+				}
+				if(randNoEdge){
+					if(random.nextInt(100)>70){
+						table.getModel().setValueAt("", y, x);
+					}
 				}
 				
 			}
