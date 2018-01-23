@@ -14,6 +14,7 @@ import org.jgraph.graph.GraphConstants;
 import org.jgrapht.ListenableGraph;
 import org.jgrapht.ext.JGraphModelAdapter;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.ListenableDirectedGraph;
 import org.jgrapht.graph.ListenableUndirectedGraph;
 
@@ -52,7 +53,7 @@ public class DrawPanel extends JApplet {
 
 
 	public void init(LinkedList<Vertex> path, Graph graph, int numOfVertex) {
-		ListenableGraph g = new ListenableUndirectedGraph(DefaultEdge.class);
+		ListenableGraph g = new ListenableUndirectedGraph(DefaultWeightedEdge.class);
 
 		jgAdapter = new JGraphModelAdapter<>(g);
 		
@@ -69,7 +70,7 @@ public class DrawPanel extends JApplet {
         for (Edge edge : graph.getEdges()) {
         	String[] edges = new String[2];
         	edges = edge.toString().split(" ");
-        	g.addEdge(edges[0], edges[1]);
+        	g.addEdge(edges[0], edges[1], edge.getWeight()); 
 		}
 
         int a = getWidth() / 2;
