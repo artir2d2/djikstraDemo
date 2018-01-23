@@ -49,6 +49,7 @@ public class MainWindow {
 	private final Action actionStartSimulation = new StartSimulationAction();
 	JComboBox<String> comboStartVertex;
 	JComboBox<String> comboEndVertex;
+	JComboBox<Integer> percentRandomData;
 	private JTextField numberOfVerticlesTxt;
 	JPanel tablePanel;
 	DrawPanel drawPanel;
@@ -56,7 +57,7 @@ public class MainWindow {
 	private final Action actionRandomData = new ActionRandomData();
 	private JTextField minRandomTxt;
 	private JTextField maxRandomTxt;
-	private JCheckBox randomNoEdgeCB;
+	JLabel lblFoundPath;
 
 	/**
 	 * Launch the application.
@@ -87,7 +88,7 @@ public class MainWindow {
 	private void initialize() {
 		frmDjikstraAlgorithmDemo = new JFrame();
 		frmDjikstraAlgorithmDemo.setTitle("Djikstra algorithm demo");
-		frmDjikstraAlgorithmDemo.setBounds(100, 100, 800, 600);
+		frmDjikstraAlgorithmDemo.setBounds(100, 100, 1200, 800);
 		frmDjikstraAlgorithmDemo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 200, 0 };
@@ -105,9 +106,9 @@ public class MainWindow {
 
 		GridBagLayout gbl_menuPanel = new GridBagLayout();
 		gbl_menuPanel.columnWidths = new int[] { 0, 0 };
-		gbl_menuPanel.rowHeights = new int[] { 20, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_menuPanel.rowHeights = new int[] { 20, 0, 0, 0, 0, 0 };
 		gbl_menuPanel.columnWeights = new double[] { 1.0, 1.0 };
-		gbl_menuPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+		gbl_menuPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 		menuPanel.setLayout(gbl_menuPanel);
 		frmDjikstraAlgorithmDemo.getContentPane().add(menuPanel, gbc_menuPanel);
 
@@ -274,12 +275,12 @@ public class MainWindow {
 		gbc_randomDataPanel.insets = new Insets(0, 0, 5, 0);
 		gbc_randomDataPanel.fill = GridBagConstraints.BOTH;
 		gbc_randomDataPanel.gridx = 0;
-		gbc_randomDataPanel.gridy = 7;
+		gbc_randomDataPanel.gridy = 4;
 		menuPanel.add(randomDataPanel, gbc_randomDataPanel);
 		GridBagLayout gbl_randomDataPanel = new GridBagLayout();
 		gbl_randomDataPanel.columnWidths = new int[] { 0, 0, 0 };
 		gbl_randomDataPanel.rowHeights = new int[] { 0, 0, 0 };
-		gbl_randomDataPanel.columnWeights = new double[] { 0.0, 0.0, 0.0 };
+		gbl_randomDataPanel.columnWeights = new double[] { 0.0, 0.0, 1.0 };
 		gbl_randomDataPanel.rowWeights = new double[] { 0.0, 0.0, 0.0 };
 		randomDataPanel.setLayout(gbl_randomDataPanel);
 
@@ -292,10 +293,18 @@ public class MainWindow {
 
 		JLabel lblMaxRandom = new JLabel("Do:");
 		GridBagConstraints gbc_lblMaxRandom = new GridBagConstraints();
+		gbc_lblMaxRandom.anchor = GridBagConstraints.EAST;
 		gbc_lblMaxRandom.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMaxRandom.gridx = 1;
 		gbc_lblMaxRandom.gridy = 0;
 		randomDataPanel.add(lblMaxRandom, gbc_lblMaxRandom);
+		
+		JLabel lblIloKrawdzi_1 = new JLabel("% ilo\u015B\u0107 kraw\u0119dzi w grafie");
+		GridBagConstraints gbc_lblIloKrawdzi_1 = new GridBagConstraints();
+		gbc_lblIloKrawdzi_1.insets = new Insets(0, 0, 5, 0);
+		gbc_lblIloKrawdzi_1.gridx = 2;
+		gbc_lblIloKrawdzi_1.gridy = 0;
+		randomDataPanel.add(lblIloKrawdzi_1, gbc_lblIloKrawdzi_1);
 
 		minRandomTxt = new JTextField();
 		minRandomTxt.setText("0");
@@ -314,15 +323,18 @@ public class MainWindow {
 		gbc_maxRandomTxt.gridx = 1;
 		gbc_maxRandomTxt.gridy = 1;
 		randomDataPanel.add(maxRandomTxt, gbc_maxRandomTxt);
-
-		randomNoEdgeCB = new JCheckBox("Bez po\u0142\u0105cze\u0144");
-		randomNoEdgeCB.setToolTipText(
-				"Gdy pole zaznaczone, nie wszystkie wierzcho\u0142ki b\u0119d\u0105 po\u0142\u0105czone ze sob\u0105");
-		GridBagConstraints gbc_randomNoEdgeCB = new GridBagConstraints();
-		gbc_randomNoEdgeCB.insets = new Insets(0, 0, 5, 0);
-		gbc_randomNoEdgeCB.gridx = 2;
-		gbc_randomNoEdgeCB.gridy = 1;
-		randomDataPanel.add(randomNoEdgeCB, gbc_randomNoEdgeCB);
+		
+		percentRandomData = new JComboBox<Integer>();;
+		DefaultComboBoxModel percentRandomDataModel = (DefaultComboBoxModel) percentRandomData.getModel();
+		for(int i=1;i<=10;i++){
+			percentRandomDataModel.addElement(i*10);
+		}
+		GridBagConstraints gbc_comboBox = new GridBagConstraints();
+		gbc_comboBox.insets = new Insets(0, 0, 5, 0);
+		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_comboBox.gridx = 2;
+		gbc_comboBox.gridy = 1;
+		randomDataPanel.add(percentRandomData, gbc_comboBox);
 
 		JButton btnRandomData = new JButton("Losuj dane");
 		btnRandomData.setAction(actionRandomData);
@@ -339,7 +351,7 @@ public class MainWindow {
 		btnStartSimulation.setText("Rozpocznij symulacj\u0119");
 		GridBagConstraints gbc_btnStartSimulation = new GridBagConstraints();
 		gbc_btnStartSimulation.gridx = 1;
-		gbc_btnStartSimulation.gridy = 8;
+		gbc_btnStartSimulation.gridy = 5;
 		menuPanel.add(btnStartSimulation, gbc_btnStartSimulation);
 
 		drawPanel = new DrawPanel();
@@ -350,6 +362,13 @@ public class MainWindow {
 		gbc_drawPanel.gridy = 0;
 		JScrollPane scrollDrawPanel = new JScrollPane(drawPanel);
 		frmDjikstraAlgorithmDemo.getContentPane().add(scrollDrawPanel, gbc_drawPanel);
+		
+		lblFoundPath = new JLabel("");
+		GridBagConstraints gbc_lblFoundPath = new GridBagConstraints();
+		gbc_lblFoundPath.insets = new Insets(0, 0, 5, 0);
+		gbc_lblFoundPath.gridx = 1;
+		gbc_lblFoundPath.gridy = 1;
+		frmDjikstraAlgorithmDemo.getContentPane().add(lblFoundPath, gbc_lblFoundPath);
 
 		JPanel footerPanel = new JPanel();
 		GridBagConstraints gbc_footerPanel = new GridBagConstraints();
@@ -401,19 +420,25 @@ public class MainWindow {
 			// execute algorithm with the start node
 			algorithm.execute(algorithm.nodes.get(comboStartVertex.getSelectedIndex()));
 			// get path from start node to end node
-
 			LinkedList<Vertex> path = algorithm.getPath(algorithm.nodes.get(comboEndVertex.getSelectedIndex()));
+			
 			try {
+				String foundPathLabelText = "Znaleziona œcie¿ka: ";
 				for (Vertex vertex : path) {
+					if(!vertex.equals(path.getLast())){
+						foundPathLabelText += vertex.getName()+" -> ";
+					}else{
+						foundPathLabelText += vertex.getName();
+					}
 					System.out.println(vertex);
-//					drawPanel.drawNode(path.get(0), 20, 20);
 				}
+				lblFoundPath.setText(foundPathLabelText);
 			} catch (NullPointerException e1) {
 				JOptionPane.showMessageDialog(frmDjikstraAlgorithmDemo, "Wierzcho³ek koñcowy nieosi¹galny!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
-
-	        drawPanel.init(path, graph, numberOfVerticles);
+			
+			drawPanel.init(path, graph, numberOfVerticles);
 			drawPanel.setName("Dijkstra Graph");
 			drawPanel.setVisible(true);
 		}
@@ -427,7 +452,7 @@ public class MainWindow {
 
 		public void actionPerformed(ActionEvent e) {
 			TableModel.losujDane(Integer.parseInt(minRandomTxt.getText()), Integer.parseInt(maxRandomTxt.getText()),
-					randomNoEdgeCB.isSelected(), numberOfVerticles, edgeTable);
+					(Integer)percentRandomData.getSelectedItem(), numberOfVerticles, edgeTable);
 		}
 	}
 }

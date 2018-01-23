@@ -138,10 +138,8 @@ public class Algorithm {
 				int weight;
 				weightStr = new String(String.valueOf(edgeTable.getValueAt(i, j+1)));
 				if(weightStr==null||weightStr.matches("")||weightStr.matches("null")||weightStr.matches("-")){
-					System.out.println("NULL "+weightStr);
 					weight = Integer.MAX_VALUE;
 				}else{
-					System.out.println("NEW EDGE: "+weightStr);
 					weight = Integer.parseInt(weightStr);
 					if(i>j){
 						edges.add(new Edge("E",nodes.get(j),nodes.get(i),weight));
@@ -150,9 +148,6 @@ public class Algorithm {
 					}
 				}
 			}
-		}
-		for(int i=0;i<edges.size();i++){
-			System.out.println("EDGESY: "+edges.get(i).getWeight());
 		}
 		Graph graph = new Graph(nodes, edges);
 		return graph;
