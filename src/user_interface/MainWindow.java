@@ -392,9 +392,6 @@ public class MainWindow {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			/*
-			 * SEKCJA DO WYEKSPORTOWANIA DO ZEWNETRZNEJ METODY/KLASY
-			 */
 			// initialize graph data with values from table
 			Graph graph = Algorithm.initAlgorithm(numberOfVerticles, edgeTable);
 			// create an algorithm object
@@ -404,24 +401,21 @@ public class MainWindow {
 			// execute algorithm with the start node
 			algorithm.execute(algorithm.nodes.get(comboStartVertex.getSelectedIndex()));
 			// get path from start node to end node
-			/*
-			 * TUTAJ MASZ LISTE WIERZCHOLKOW KTORE SA NAJKROTSZA SCIEZKA OD
-			 * WIERZCHOLKA POCZATKOWEGO DO KONCOWEGO
-			 */
+
 			LinkedList<Vertex> path = algorithm.getPath(algorithm.nodes.get(comboEndVertex.getSelectedIndex()));
 			try {
 				for (Vertex vertex : path) {
 					System.out.println(vertex);
-					drawPanel.drawNode(path.get(0), 20, 20);
+//					drawPanel.drawNode(path.get(0), 20, 20);
 				}
 			} catch (NullPointerException e1) {
 				JOptionPane.showMessageDialog(frmDjikstraAlgorithmDemo, "Wierzcho³ek koñcowy nieosi¹galny!", "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
 
-			// TU GDYBYS CHCIAL RYSOWAC TO SAM - PRZYKLAD RYSOWANIA WIERZCHOLKA
-			// NA DRAWPANELU
-
+	        drawPanel.init(path, graph, numberOfVerticles);
+			drawPanel.setName("Dijkstra Graph");
+			drawPanel.setVisible(true);
 		}
 	}
 
